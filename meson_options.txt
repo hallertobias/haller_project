@@ -1,0 +1,4 @@
+option('asio_include_dir', type : 'string', value : '/home/tobias/Documents/asio/include/', description : 'the include dir of asio')
+option('cli11_include_dir', type : 'string', value : '/home/tobias/Documents/cli11', description : 'the dir containing CLI11.hpp')
+option('spdlog_include_dir', type : 'string', value : '/home/tobias/Documents/spdlog/include', description : 'the include dir of spdlog')
+
