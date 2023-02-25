@@ -9,16 +9,21 @@ using namespace asio::ip;
 int main(int argc, char* argv[]) {
     CLI::App app{"Digest Client"};
 
-    unsigned short port = 1113;
-    app.add_option("-p, --port", port, "port to connect to");
+    string username;
+    string password;
+    string digestURI;
+    app.add_option("username", username);
+    app.add_option("password", password);
+    app.add_option("digestURI", digestURI);
+
 
     CLI11_PARSE(app, argc, argv);
 
-    tcp::iostream stream("localhost", to_string(port));
+    tcp::iostream stream("localhost", "1113");
 
     if (stream) {
         while(true) {
-            stream << "LOGON" << endl;
+            stream << "LOGON;user;password;test@test.com" << endl;
         }
     } else {
         spdlog::error("Could not connect to server");

@@ -1,0 +1,12 @@
+* Changelog
+** [0.0.2] - 2023-02-25
+** Changed
+- Changed CLI in client.cpp
+** [0.0.1] - 2023-02-17
+*** Added
+- Create repository and send invitation to prof
+- Instantiate given template
+- Fill .gitignore
+- Added main.cpp in folder client
+- Added main.cpp in folder server
+- Added md5.cpp Source code for MD5 hashing
