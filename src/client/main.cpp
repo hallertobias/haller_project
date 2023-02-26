@@ -1,29 +1,44 @@
 #include "spdlog/spdlog.h"
 #include "asio.hpp"
 #include <iostream>
+#include <fstream>
 #include "CLI11.hpp"
 
 using namespace std;
 using namespace asio::ip;
 
+string eraseSpaces(string &str) {
+   str.erase(remove(str.begin(), str.end(), ' '), str.end());
+   return str;
+}
+
 int main(int argc, char* argv[]) {
     CLI::App app{"Digest Client"};
 
-    string username;
-    string password;
-    string digestURI;
-    app.add_option("username", username);
-    app.add_option("password", password);
-    app.add_option("digestURI", digestURI);
-
-
+    string credentials = "";
+    app.add_option("-c, --credentials", credentials, "username;password;URI");
     CLI11_PARSE(app, argc, argv);
+
+    if (credentials.length() == 0) {
+        fstream file;
+        file.open("../credentials.txt",ios::in);
+        if (file.is_open()){ 
+            string tp;
+            while(getline(file, tp)){ 
+                string part = tp.substr(tp.find(":")+1, tp.length());
+                part = eraseSpaces(part) + ";";
+                credentials += part;
+            }
+            file.close(); 
+        }
+        credentials = credentials.substr(0, credentials.length()-1);
+    }
 
     tcp::iostream stream("localhost", "1113");
 
     if (stream) {
         while(true) {
-            stream << "LOGON;user;password;test@test.com" << endl;
+            stream << "LOGON;" << credentials << endl;
         }
     } else {
         spdlog::error("Could not connect to server");
