@@ -1,6 +1,11 @@
 * Changelog
+** [0.0.3] - 2023-02-26
+*** Added
+- eraseSpaces function 
+- credentials input from console
+- credentials input from config file
 ** [0.0.2] - 2023-02-25
-** Changed
+*** Changed
 - Changed CLI in client.cpp
 ** [0.0.1] - 2023-02-17
 *** Added
@@ -9,4 +14,4 @@
 - Fill .gitignore
 - Added main.cpp in folder client
 - Added main.cpp in folder server
-- Added md5.cpp Source code for MD5 hashing
+- Added md5.cpp Header-only libar for MD5 hashing
