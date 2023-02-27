@@ -16,6 +16,8 @@ int main(int argc, char* argv[]) {
     CLI::App app{"Digest Client"};
 
     string credentials = "";
+    unsigned short port = 1113;
+    app.add_option("-p, --port", port, "port to connect to");
     app.add_option("-c, --credentials", credentials, "username;password;URI");
     CLI11_PARSE(app, argc, argv);
 
@@ -34,7 +36,7 @@ int main(int argc, char* argv[]) {
         credentials = credentials.substr(0, credentials.length()-1);
     }
 
-    tcp::iostream stream("localhost", "1113");
+    tcp::iostream stream("localhost", to_string(port));
 
     if (stream) {
         while(true) {
