@@ -1,4 +1,7 @@
 * Changelog
+** [0.0.4] - 2023-02-27
+*** Changed
+- Added getCreds() method
 ** [0.0.3] - 2023-02-26
 *** Added
 - eraseSpaces function 
