@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include "CLI11.hpp"
+#include "../md5.cpp"
 
 using namespace std;
 using namespace asio::ip;
@@ -39,9 +40,14 @@ int main(int argc, char* argv[]) {
     tcp::iostream stream("localhost", to_string(port));
 
     if (stream) {
-        while(true) {
-            stream << "LOGON;" << credentials << endl;
-        }
+        stream << "LOGON;" << credentials << endl;
+        string realm;
+        getline(stream, realm);
+        string nonce;
+        getline(stream, nonce);
+        string ha1 = "username";
+        MD5 md5;
+        cout << md5(ha1) << endl;
     } else {
         spdlog::error("Could not connect to server");
     }
