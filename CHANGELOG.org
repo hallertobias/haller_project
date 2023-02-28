@@ -1,6 +1,12 @@
 * Changelog
-** [0.0.4] - 2023-02-27
+** [0.0.5] - 2023-02-28
+*** Added 
+- Added generateNonce() method
+- Sending of nonce and realm from server to client
 *** Changed
+- Changed getCreds() method
+** [0.0.4] - 2023-02-27
+*** Added
 - Added getCreds() method
 - Added option to change port
 ** [0.0.3] - 2023-02-26
