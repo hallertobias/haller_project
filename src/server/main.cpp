@@ -2,27 +2,31 @@
 #include "asio.hpp"
 #include <chrono>
 #include <cstring>
+#include <vector>
 #include "CLI11.hpp"
+#include <random>
 #include <string>
 
 using namespace std;
 using namespace asio::ip;
 
-string* getCreds(string line) {
-    char* charArr = new char[line.length()+1];
-    strcpy(charArr, line.c_str());
-    char *ptr; 
-    ptr = strtok(charArr, ";");
-    int counter = 0;
-    string* creds = new string[3];
-    while (ptr != NULL)  
-    {  
-        string s = ptr;
-        creds[counter] = s;
-        counter++;
-        ptr = strtok(NULL, ";");  
-    }  
+
+vector<string> getCreds(string line) {
+    vector<string> creds;
+    string str;
+    stringstream ss(line); 
+    while (getline(ss, str, ';')) 
+        if (str != "LOGON") {
+            creds.push_back(str);
+        }
     return creds;
+}
+
+unsigned int generateNonce() {
+    random_device rd; 
+    mt19937 gen(rd()); 
+    uniform_int_distribution<unsigned int> distrib(0, UINT_MAX);
+    return distrib(gen);
 }
 
 int main(int argc, char* argv[]) { 
@@ -45,8 +49,13 @@ int main(int argc, char* argv[]) {
         if(strm) {
             string line;
             getline(strm, line);
-            string* creds = getCreds(line);
-            cout << creds[0] << endl;
+            vector<string> creds = getCreds(line);
+            cout << creds[0] << creds[1] << creds[2] << endl;
+            if (creds[2] == "/login.html") {
+                unsigned int nonce = generateNonce();
+                strm << "testRealm" << endl;
+                strm << nonce << endl;
+            }
         } else {
             spdlog::error("Could not connect to client");
         }
