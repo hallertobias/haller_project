@@ -1,4 +1,9 @@
 * Changelog
+** [0.0.6] - 2023-03-01
+*** Added
+- Calucalting of response on server and client side
+*** Changed
+- First request to server
 ** [0.0.5] - 2023-02-28
 *** Added 
 - Added generateNonce() method
