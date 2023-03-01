@@ -1,24 +1,21 @@
 #include "spdlog/spdlog.h"
 #include "asio.hpp"
-#include <chrono>
-#include <cstring>
 #include <vector>
 #include "CLI11.hpp"
 #include <random>
 #include <string>
+#include "../md5.cpp"
 
 using namespace std;
 using namespace asio::ip;
 
 
-vector<string> getCreds(string line) {
+vector<string> split(string line, char seperator) {
     vector<string> creds;
     string str;
     stringstream ss(line); 
-    while (getline(ss, str, ';')) 
-        if (str != "LOGON") {
-            creds.push_back(str);
-        }
+    while (getline(ss, str, seperator)) 
+        creds.push_back(str);
     return creds;
 }
 
@@ -38,6 +35,11 @@ int main(int argc, char* argv[]) {
 
     CLI11_PARSE(app, argc, argv);
 
+    string username = "username";
+    string password = "password";
+    string realm = "testRealm";
+    string uri = "/login.html";
+
     asio::io_context ctx;
     tcp::endpoint ep{tcp::v4(), port};
     tcp::acceptor acceptor{ctx, ep}; 
@@ -49,12 +51,24 @@ int main(int argc, char* argv[]) {
         if(strm) {
             string line;
             getline(strm, line);
-            vector<string> creds = getCreds(line);
-            cout << creds[0] << creds[1] << creds[2] << endl;
-            if (creds[2] == "/login.html") {
+            vector<string> request = split(line, ' ');
+            if (request[0] == "LOGON" && request[1] == uri) {
                 unsigned int nonce = generateNonce();
-                strm << "testRealm" << endl;
+                strm << realm << endl;
                 strm << nonce << endl;
+                getline(strm, line);
+                vector<string> response = split(line, ',');
+                if (response[0] == username) {
+                    string ha1 = username + realm + password;
+                    string ha2 = "GET" + request[1];
+                    MD5 md5;
+                    string responseCalc = md5(md5(ha1)+to_string(nonce)+md5(ha2));
+                    if (response[1] == responseCalc) {
+                        strm << "ACK" << nonce << endl;
+                    } else {
+                        strm << "NAK" << endl;
+                    }
+                }
             }
         } else {
             spdlog::error("Could not connect to client");
