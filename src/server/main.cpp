@@ -20,10 +20,20 @@ vector<string> split(string line, char seperator) {
 }
 
 unsigned int generateNonce() {
+    spdlog::info("Generating nonce");
     random_device rd; 
     mt19937 gen(rd()); 
     uniform_int_distribution<unsigned int> distrib(0, UINT_MAX);
     return distrib(gen);
+}
+
+string generateHashes(string username, string password, string uri, string realm, unsigned int nonce) {
+    spdlog::info("Generating hashes for nonce: " || nonce);
+    string ha1 = username + realm + password;
+    string ha2 = "GET" + uri;
+    MD5 md5;
+    string responseCalc = md5(md5(ha1)+to_string(nonce)+md5(ha2));
+    return responseCalc;
 }
 
 int main(int argc, char* argv[]) { 
@@ -59,13 +69,12 @@ int main(int argc, char* argv[]) {
                 getline(strm, line);
                 vector<string> response = split(line, ',');
                 if (response[0] == username) {
-                    string ha1 = username + realm + password;
-                    string ha2 = "GET" + request[1];
-                    MD5 md5;
-                    string responseCalc = md5(md5(ha1)+to_string(nonce)+md5(ha2));
+                    string responseCalc = generateHashes(username, password, uri, realm, nonce);
                     if (response[1] == responseCalc) {
-                        strm << "ACK" << nonce << endl;
+                        spdlog::info("Authentification was succesful!");
+                        strm << "ACK" << "," << nonce << endl;
                     } else {
+                        spdlog::info("Authentification was not succesful!");
                         strm << "NAK" << endl;
                     }
                 }
