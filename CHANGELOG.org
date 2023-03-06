@@ -1,4 +1,7 @@
 * Changelog
+** [1.0.0] - 2023-03-06
+*** Added
+- Better logging and exception handling
 ** [0.0.6] - 2023-03-01
 *** Added
 - Calucalting of response on server and client side
