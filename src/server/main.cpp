@@ -28,7 +28,7 @@ unsigned int generateNonce() {
 }
 
 string generateHashes(string username, string password, string uri, string realm, unsigned int nonce) {
-    spdlog::info("Generating hashes for nonce: " || nonce);
+    spdlog::info("Generating hashes for nonce: " + to_string(nonce));
     string ha1 = username + realm + password;
     string ha2 = "GET" + uri;
     MD5 md5;
@@ -71,13 +71,15 @@ int main(int argc, char* argv[]) {
                 if (response[0] == username) {
                     string responseCalc = generateHashes(username, password, uri, realm, nonce);
                     if (response[1] == responseCalc) {
-                        spdlog::info("Authentification was succesful!");
+                        spdlog::info("Authentification was succesful for uri " + uri + "!");
                         strm << "ACK" << "," << nonce << endl;
                     } else {
-                        spdlog::info("Authentification was not succesful!");
+                        spdlog::info("Authentification was not succesful for uri " + uri + "!");
                         strm << "NAK" << endl;
                     }
                 }
+            } else {
+                spdlog::info("False request!");
             }
         } else {
             spdlog::error("Could not connect to client");
