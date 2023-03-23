@@ -77,6 +77,9 @@ int main(int argc, char* argv[]) {
                         spdlog::info("Authentification was not succesful for uri " + uri + "!");
                         strm << "NAK" << endl;
                     }
+                } else {
+                    spdlog::info("Authentification was not succesful for uri " + uri + "!");
+                    strm << "NAK" << endl;
                 }
             } else {
                 spdlog::error("False request!");

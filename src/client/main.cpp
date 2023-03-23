@@ -20,11 +20,6 @@ vector<string> split(string line, char seperator) {
     return creds;
 }
 
-string eraseSpaces(string &str) {
-   str.erase(remove(str.begin(), str.end(), ' '), str.end());
-   return str;
-}
-
 string generateHashes(vector<string> creds, string nonce, string realm) {
     spdlog::info("Generating hashes");
     string ha1 = creds[0] + realm + creds[1];
@@ -73,9 +68,13 @@ int main(int argc, char* argv[]) {
         string response = generateHashes(creds, nonce, realm);
         stream << creds[0] << "," << response << endl;
         getline(stream, response);
-        vector<string> responseServer = split(response, ',');
-        if (responseServer[0] == "ACK") {
-            cout << "Login war erfolgreich!" << endl;
+        if (response.find(',') != string::npos) {
+            vector<string> responseServer = split(response, ',');
+            if (responseServer[0] == "ACK") {
+                cout << "Login war erfolgreich!" << endl;
+            } else {
+                cout << "Login war nicht erfolgreich!" << endl;
+            }
         } else {
             cout << "Login war nicht erfolgreich!" << endl;
         }
