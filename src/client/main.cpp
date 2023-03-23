@@ -4,10 +4,12 @@
 #include <fstream>
 #include "CLI11.hpp"
 #include "../md5.cpp"
+#include "json.hpp"
 #include <vector>
 
 using namespace std;
 using namespace asio::ip;
+using json = nlohmann::json;
 
 vector<string> split(string line, char seperator) {
     vector<string> creds;
@@ -38,25 +40,26 @@ int main(int argc, char* argv[]) {
     string credentials = "";
     unsigned short port = 1113;
     app.add_option("-p, --port", port, "port to connect to");
-    app.add_option("-c, --credentials", credentials, "username;password;URI");
+    app.add_option("-c, --credentials", credentials, "username:password:URI");
     CLI11_PARSE(app, argc, argv);
 
     vector<string> creds;
     if (credentials.length() == 0) {
         spdlog::info("Reading creds from file");
-        fstream file;
-        file.open("../credentials.txt",ios::in);
-        if (file.is_open()){ 
-            string tp;
-            while(getline(file, tp)){ 
-                string part = tp.substr(tp.find(":")+1, tp.length());
-                part = eraseSpaces(part);
-                creds.push_back(part);
-                credentials += part + ";";
-            }
-            file.close(); 
+        ifstream f("../credentials.json");
+        json j;
+        try
+        {
+            j = json::parse(f);
+            creds.push_back(j.at("username"));
+            creds.push_back(j.at("password"));
+            creds.push_back(j.at("URI"));
         }
-        credentials = credentials.substr(0, credentials.length()-1);
+        catch (json::parse_error& ex)
+        {
+            std::cerr << "parse error at byte " << ex.byte << std::endl;
+}    } else {
+        creds = split(credentials, ':');
     }
 
     tcp::iostream stream("localhost", to_string(port));

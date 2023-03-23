@@ -79,7 +79,7 @@ int main(int argc, char* argv[]) {
                     }
                 }
             } else {
-                spdlog::info("False request!");
+                spdlog::error("False request!");
             }
         } else {
             spdlog::error("Could not connect to client");
